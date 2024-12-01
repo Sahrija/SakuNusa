@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "517459121062",
+    "project_id": "saku-nusa",
+    "storage_bucket": "saku-nusa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517459121062:android:2895568f6deb656d393567",
+        "android_client_info": {
+          "package_name": "com.example.sakunusa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZ8SLkC8xcFfC2nYpol_0nY7VEzL4rvx4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
