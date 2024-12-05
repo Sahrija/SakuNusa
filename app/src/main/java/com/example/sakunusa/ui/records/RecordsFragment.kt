@@ -1,16 +1,23 @@
 package com.example.sakunusa.ui.records
 
+import android.app.Activity
+import android.content.Intent
+import com.example.sakunusa.ui.adapter.GroupedRecordAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sakunusa.data.Result
+import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentRecordsBinding
 import com.example.sakunusa.factory.ViewModelFactory
-import com.example.sakunusa.ui.adapter.RecordAdapter
+import com.example.sakunusa.model.RecordItem
+import com.example.sakunusa.ui.newrecord.NewRecordActivity
 
 class RecordsFragment : Fragment() {
 
@@ -38,13 +45,25 @@ class RecordsFragment : Fragment() {
     }
 
     private fun setUpAdapter() {
-        val adapter = RecordAdapter()
+        var adapter: GroupedRecordAdapter?
 
         recordsViewModel.records.observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
                     is Result.Success -> {
-                        adapter.submitList(result.data)
+                        val records: List<RecordEntity> = result.data
+                        val groupedList = RecordItem.groupRecords(records, RecordItem.GROUP_BY_DAY)
+                        adapter = GroupedRecordAdapter(groupedList,
+                            onclick = { recordId: Int ->
+                                editRecord(recordId)
+                            })
+
+                        binding.rvRecords.apply {
+                            this.adapter = adapter
+                            layoutManager = LinearLayoutManager(context)
+                            setHasFixedSize(true)
+                        }
+//                        adapter.submitList(groupedList)
                     }
 
                     is Result.Error -> {
@@ -55,12 +74,20 @@ class RecordsFragment : Fragment() {
                 }
             }
         }
+    }
 
-        binding.rvRecords.apply {
-            this.adapter = adapter
-            layoutManager = LinearLayoutManager(context)
-            setHasFixedSize(true)
+    private val newRecordLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val newRecord = result.data?.getParcelableExtra<RecordEntity>("new_record")
+                Toast.makeText(requireActivity(), "Edited", Toast.LENGTH_SHORT).show()
+            }
         }
+
+    private fun editRecord(recordId: Int) {
+        val intent = Intent(requireActivity(), NewRecordActivity::class.java)
+        intent.putExtra(NewRecordActivity.EXTRA_RECORD_ID, recordId)
+        newRecordLauncher.launch(intent)
     }
 
     override fun onDestroyView() {

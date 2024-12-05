@@ -1,38 +1,24 @@
 package com.example.sakunusa.ui.statistics
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import com.example.sakunusa.R
 import com.example.sakunusa.data.Result
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentStatisticsBinding
-import com.example.sakunusa.databinding.ViewTwoBinding
 import com.example.sakunusa.factory.ViewModelFactory
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartLineDashStyleType
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartSymbolStyleType
-import com.github.aachartmodel.aainfographics.aachartcreator.AAChartSymbolType
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
-import com.github.aachartmodel.aainfographics.aachartcreator.AAOptions
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.github.aachartmodel.aainfographics.aachartcreator.aa_toAAOptions
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AADataLabels
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AADateTimeLabelFormats
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AALabels
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AAMarker
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AASeries
 import com.github.aachartmodel.aainfographics.aaoptionsmodel.AAStyle
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AASubtitle
 import com.github.aachartmodel.aainfographics.aaoptionsmodel.AATooltip
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AAXAxis
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AAZonesElement
 
 class StatisticsFragment : Fragment() {
 
@@ -40,8 +26,9 @@ class StatisticsFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    private lateinit var statisticsViewModel: StatisticsViewModel
-
+    private val statisticsViewModel: StatisticsViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
     private var isChartCreated: Boolean = false
 
     override fun onCreateView(
@@ -49,24 +36,12 @@ class StatisticsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-//        val textView: TextView = binding.textSlideshow
-//        statisticsViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val factory = ViewModelFactory.getInstance(requireActivity())
-        statisticsViewModel =
-            ViewModelProvider(this, factory)[StatisticsViewModel::class.java]
 
         statisticsViewModel.records.observe(viewLifecycleOwner) { result ->
             when (result) {

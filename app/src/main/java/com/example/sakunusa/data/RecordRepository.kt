@@ -18,6 +18,7 @@ class RecordRepository private constructor(
     private val appExecutors: AppExecutors
 ) {
     private val mediatorLiveDataResult = MediatorLiveData<Result<List<RecordEntity>>>()
+    private val mediatorSingleLiveDataResult = MediatorLiveData<Result<RecordEntity>>()
 
     fun fetchAllRecords(): LiveData<Result<List<RecordEntity>>> {
         mediatorLiveDataResult.value = Result.Loading
@@ -69,10 +70,16 @@ class RecordRepository private constructor(
         }
     }
 
-    fun deleteRecord(record: RecordEntity) {
-        appExecutors.diskIO.execute {
-            recordDao.deleteRecord(record)
-        }
+    suspend fun deleteRecord(recordId: Int) : Boolean{
+        return recordDao.deleteRecordById(recordId) > 0
+    }
+
+    suspend fun getRecordById(recordId: Int): RecordEntity? {
+        return recordDao.getRecordById(recordId) // Replace with your database query
+    }
+
+    suspend fun updateRecord(record: RecordEntity) {
+        recordDao.updateRecord(record)
     }
 
 

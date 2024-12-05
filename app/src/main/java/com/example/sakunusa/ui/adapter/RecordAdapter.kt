@@ -11,10 +11,14 @@ import com.example.sakunusa.utils.Utils.formatDate
 import java.text.NumberFormat
 import java.util.Locale
 
-class RecordAdapter : ListAdapter<RecordEntity, RecordAdapter.MyViewHolder>(RecordDiffCallback) {
+class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
+    ListAdapter<RecordEntity, RecordAdapter.MyViewHolder>(RecordDiffCallback) {
 
 
-    class MyViewHolder(private val binding: RecordItemBinding) :
+    class MyViewHolder(
+        private val binding: RecordItemBinding,
+        var onclick: (RecordEntity) -> Unit
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(record: RecordEntity) {
@@ -23,12 +27,14 @@ class RecordAdapter : ListAdapter<RecordEntity, RecordAdapter.MyViewHolder>(Reco
             binding.tvDateTime.text = formatDate(record.dateTime)
             binding.tvCategory.text = record.category
             binding.tvDescription.text = record.description.toString()
+
+            binding.root.setOnClickListener { onclick(record) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = RecordItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MyViewHolder(binding)
+        return MyViewHolder(binding, onclick)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {

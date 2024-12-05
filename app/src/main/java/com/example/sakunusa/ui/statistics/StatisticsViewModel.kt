@@ -11,7 +11,7 @@ import com.example.sakunusa.data.local.entity.RecordEntity
 class StatisticsViewModel(private val repository: RecordRepository) : ViewModel() {
     private val _records = MediatorLiveData<Result<List<RecordEntity>>>().apply {
         value = Result.Loading
-        addSource(repository.getRecords("asc")) { result ->
+        addSource(repository.getRecords("desc")) { result ->
             value = result
         }
     }
@@ -19,6 +19,6 @@ class StatisticsViewModel(private val repository: RecordRepository) : ViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        repository.getRecords("asc").removeObserver { }
+        repository.getRecords("desc").removeObserver { }
     }
 }

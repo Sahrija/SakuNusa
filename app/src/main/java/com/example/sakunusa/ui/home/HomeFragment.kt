@@ -1,18 +1,21 @@
 package com.example.sakunusa.ui.home
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sakunusa.data.Result
+import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentHomeBinding
 import com.example.sakunusa.factory.ViewModelFactory
 import com.example.sakunusa.ui.adapter.RecordAdapter
-import com.example.sakunusa.ui.records_copy.RecordsActivity
+import com.example.sakunusa.ui.newrecord.NewRecordActivity
 
 class HomeFragment : Fragment() {
 
@@ -33,18 +36,19 @@ class HomeFragment : Fragment() {
 
         homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
 
-        setUpAdapter()
-
-        binding.btnAllRecords.setOnClickListener {
-            val intent = Intent(requireActivity(), RecordsActivity::class.java)
-            startActivity(intent)
-        }
-
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setUpAdapter()
+    }
+
     private fun setUpAdapter() {
-        val adapter = RecordAdapter()
+        val adapter = RecordAdapter(onclick = {
+            editRecord(it.id)
+        })
 
         homeViewModel.records.observe(viewLifecycleOwner) { result ->
             if (result != null) {
@@ -67,6 +71,19 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
+    }
+
+    private val newRecordLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val newRecord = result.data?.getParcelableExtra<RecordEntity>("new_record")
+            }
+        }
+
+    private fun editRecord(recordId: Int) {
+        val intent = Intent(requireActivity(), NewRecordActivity::class.java)
+        intent.putExtra(NewRecordActivity.EXTRA_RECORD_ID, recordId)
+        newRecordLauncher.launch(intent)
     }
 
     override fun onDestroyView() {

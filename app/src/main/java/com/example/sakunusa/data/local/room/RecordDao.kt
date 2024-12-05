@@ -2,7 +2,6 @@ package com.example.sakunusa.data.local.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -34,8 +33,11 @@ interface RecordDao {
     fun insertRecords(records: List<RecordEntity>)
 
     @Update
-    fun updateRecord(record: RecordEntity)
+    suspend fun updateRecord(record: RecordEntity)
 
-    @Delete
-    fun deleteRecord(record: RecordEntity)
+    @Query("DELETE FROM records WHERE id = :recordId")
+    suspend fun deleteRecordById(recordId: Int): Int
+
+    @Query("SELECT * FROM records WHERE id = :recordId ")
+    suspend fun getRecordById(recordId: Int): RecordEntity?
 }

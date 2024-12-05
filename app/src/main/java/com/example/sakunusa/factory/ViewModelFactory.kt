@@ -8,7 +8,6 @@ import com.example.sakunusa.data.RecordRepository
 import com.example.sakunusa.ui.records.RecordsViewModel
 import com.example.sakunusa.ui.home.HomeViewModel
 import com.example.sakunusa.ui.newrecord.NewRecordViewModel
-import com.example.sakunusa.ui.records_copy.RecordListViewModel
 import com.example.sakunusa.ui.statistics.StatisticsViewModel
 
 
@@ -21,8 +20,6 @@ class ViewModelFactory private constructor(private val recordRepository: RecordR
             -> NewRecordViewModel(recordRepository) as T
             modelClass.isAssignableFrom(HomeViewModel::class.java)
             -> HomeViewModel(recordRepository) as T
-            modelClass.isAssignableFrom(RecordListViewModel::class.java)
-            -> RecordListViewModel(recordRepository) as T
             modelClass.isAssignableFrom(StatisticsViewModel::class.java)
             -> StatisticsViewModel(recordRepository) as T
             modelClass.isAssignableFrom(RecordsViewModel::class.java)
