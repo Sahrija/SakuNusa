@@ -3,6 +3,7 @@ package com.example.sakunusa.ui.home
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,11 +77,12 @@ class HomeFragment : Fragment() {
     private val newRecordLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val newRecord = result.data?.getParcelableExtra<RecordEntity>("new_record")
+                result.data?.getParcelableExtra<RecordEntity>("new_record")
             }
         }
 
     private fun editRecord(recordId: Int) {
+        Log.d("Test id", recordId.toString())
         val intent = Intent(requireActivity(), NewRecordActivity::class.java)
         intent.putExtra(NewRecordActivity.EXTRA_RECORD_ID, recordId)
         newRecordLauncher.launch(intent)

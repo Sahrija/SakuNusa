@@ -18,7 +18,6 @@ class RecordRepository private constructor(
     private val appExecutors: AppExecutors
 ) {
     private val mediatorLiveDataResult = MediatorLiveData<Result<List<RecordEntity>>>()
-    private val mediatorSingleLiveDataResult = MediatorLiveData<Result<RecordEntity>>()
 
     fun fetchAllRecords(): LiveData<Result<List<RecordEntity>>> {
         mediatorLiveDataResult.value = Result.Loading

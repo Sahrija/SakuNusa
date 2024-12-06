@@ -2,7 +2,6 @@ package com.example.sakunusa.ui.statistics
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sakunusa.data.RecordRepository
 import com.example.sakunusa.data.Result

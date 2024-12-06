@@ -5,11 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sakunusa.data.RecordRepository
-import com.example.sakunusa.data.Result
 import com.example.sakunusa.data.local.entity.RecordEntity
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Date
 
 class NewRecordViewModel(private val repository: RecordRepository) : ViewModel() {
     private val _selectedDate = MutableLiveData<Long>().apply {
@@ -42,10 +40,6 @@ class NewRecordViewModel(private val repository: RecordRepository) : ViewModel()
             val result = repository.getRecordById(recordId)
             _record.postValue(result)
         }
-    }
-
-    fun getCurrentTime(): Long {
-        return System.currentTimeMillis()
     }
 
     fun updateRecord(record: RecordEntity) {

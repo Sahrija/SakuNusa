@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.R
-import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.ItemRecordBinding
 import com.example.sakunusa.model.RecordItem
 import java.text.SimpleDateFormat

@@ -43,6 +43,7 @@ class NewRecordActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory)[NewRecordViewModel::class.java]
 
         recordId = intent.getIntExtra(EXTRA_RECORD_ID, -1)
+
         if (recordId != -1) {
             isEdit = true
 

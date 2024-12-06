@@ -39,11 +39,11 @@ sealed class RecordItem {
                 val balance = recordList.sumOf { it.amount.toDouble() }.toFloat()
 
                 // Add header
-                groupedRecords.add(RecordItem.GroupHeader(title = dateKey, balance = balance))
+                groupedRecords.add(GroupHeader(title = dateKey, balance = balance))
 
                 // Add all records
                 groupedRecords.addAll(recordList.map {
-                    RecordItem.Record(
+                    Record(
                         id = it.id,
                         accountId = it.accountId,
                         amount = it.amount,

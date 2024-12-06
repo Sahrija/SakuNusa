@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.example.sakunusa.data.Result
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentStatisticsBinding
@@ -76,7 +75,7 @@ class StatisticsFragment : Fragment() {
 
 
         if (!isChartCreated) {
-            series as Array<Any>
+            val genericSeries: Array<Any> = Array(series.size) { series[it] }
 
             val aaTooltip = AATooltip()
                 .useHTML(true)
@@ -104,7 +103,7 @@ class StatisticsFragment : Fragment() {
                 .markerRadius(0)
                 .yAxisTitle("")
                 .yAxisLabelsEnabled(true)
-                .series(series)
+                .series(genericSeries)
                 .colorsTheme(
                     arrayOf(
                         "#fe117c",
