@@ -60,13 +60,13 @@
                     android:id="@+id/rbIncome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     android:text="Income" />
 
                 <RadioButton
                     android:id="@+id/rbExpense"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Expense" />
             </RadioGroup>
 

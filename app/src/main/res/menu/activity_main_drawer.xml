@@ -13,12 +13,12 @@
             app:popUpTo="@id/nav_home"
             app:popUpToInclusive="true"/>
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_records"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:title="@string/menu_records" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_statistics"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:title="@string/menu_statistics" />
     </group>
 </menu>

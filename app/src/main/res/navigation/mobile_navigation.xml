@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_records"
         android:name="com.example.sakunusa.ui.records.RecordsFragment"
-        android:label="@string/menu_gallery"
+        android:label="@string/menu_records"
         tools:layout="@layout/fragment_records" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_statistics"
         android:name="com.example.sakunusa.ui.statistics.StatisticsFragment"
-        android:label="@string/menu_slideshow"
+        android:label="@string/menu_statistics"
         tools:layout="@layout/fragment_statistics" />
 </navigation>

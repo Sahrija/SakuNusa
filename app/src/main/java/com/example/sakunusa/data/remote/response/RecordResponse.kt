@@ -14,6 +14,7 @@ data class RecordsResponse(
 data class RecordItem(
     val id: String,
     val accountId: Int,
+    val type: Int,
     val amount: Float? = null,
     val category: String? = null,
     val dateTime: Long? = null,

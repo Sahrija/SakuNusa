@@ -78,14 +78,24 @@ class NewRecordActivity : AppCompatActivity() {
 
         binding.btnSubmit.setOnClickListener {
             with(binding) {
-                val amount = etAmount.text.toString().trim().toFloat()
+                var amount = etAmount.text.toString().trim().toFloat()
                 val category = categories[spinnerCategory.selectedItemPosition]
                 val description = etDescription.text.toString().trim()
+                val type = when (binding.rgType.checkedRadioButtonId) {
+                    binding.rbIncome.id -> 1
+                    binding.rbExpense.id -> 0
+                    else -> -1
+                }
+
+                if (type == 0 && amount > 0) {
+                    amount *= -1
+                }
 
                 if (isEdit) {
                     val record = RecordEntity(
                         id = recordId,
                         amount = amount,
+                        type = type,
                         accountId = 0,
                         category = category,
                         dateTime = viewModel.selectedDate.value ?: 0,
@@ -96,6 +106,7 @@ class NewRecordActivity : AppCompatActivity() {
                     val record = RecordEntity(
                         id = 0,
                         amount = amount,
+                        type = type,
                         accountId = 0,
                         category = category,
                         dateTime = viewModel.selectedDate.value ?: 0,
@@ -171,11 +182,19 @@ class NewRecordActivity : AppCompatActivity() {
     }
 
     private fun populateFormFields(record: RecordEntity) {
+        val amount = record.amount * if (record.type == 0) -1 else 1
+
         viewModel.setSelectedDate(record.dateTime)
         binding.etDescription.setText(record.description)
-        binding.etAmount.setText(record.amount.toString())
+        binding.etAmount.setText(amount.toString())
         binding.spinnerCategory.setSelection(categories.indexOf(record.category))
-
+        binding.rgType.check(
+            when (record.type) {
+                1 -> binding.rbIncome.id
+                0 -> binding.rbExpense.id
+                else -> 0
+            }
+        )
     }
 
     companion object {

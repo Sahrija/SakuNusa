@@ -1,10 +1,13 @@
 package com.example.sakunusa.ui.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sakunusa.R
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.ItemRecordBinding
 import com.example.sakunusa.utils.Utils.formatDate
@@ -17,11 +20,19 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
 
     class MyViewHolder(
         private val binding: ItemRecordBinding,
-        var onclick: (RecordEntity) -> Unit
-    ) :
-        RecyclerView.ViewHolder(binding.root) {
+        var parent: ViewGroup,
+        var onclick: (RecordEntity) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(record: RecordEntity) {
+            val color = if (record.type == 0) {
+                ContextCompat.getColor(parent.context, R.color.red_500)
+            } else {
+                ContextCompat.getColor(parent.context, R.color.purple_500)
+            }
+            binding.tvAmount.setTextColor(color)
+
+
             val formatter = NumberFormat.getInstance(Locale.GERMANY)
             binding.tvAmount.text = formatter.format(record.amount)
             binding.tvDateTime.text = formatDate(record.dateTime)
@@ -34,7 +45,7 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MyViewHolder(binding, onclick)
+        return MyViewHolder(binding, parent, onclick)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {

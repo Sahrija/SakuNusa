@@ -10,6 +10,7 @@ sealed class RecordItem {
     data class Record(
         val id: Int,
         val accountId: Int,
+        val type: Int,
         val amount: Float,
         val category: String,
         val dateTime: Long,
@@ -54,6 +55,7 @@ sealed class RecordItem {
                         id = it.id,
                         accountId = it.accountId,
                         amount = it.amount,
+                        type = it.type,
                         category = it.category,
                         dateTime = it.dateTime,
                         description = it.description
