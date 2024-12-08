@@ -2,6 +2,7 @@ package com.example.sakunusa.ui.home
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +12,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.data.Result
+import com.example.sakunusa.data.local.entity.AccountEntity
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentHomeBinding
 import com.example.sakunusa.factory.ViewModelFactory
+import com.example.sakunusa.ui.adapter.AccountAdapter
 import com.example.sakunusa.ui.adapter.RecordAdapter
 import com.example.sakunusa.ui.newrecord.NewRecordActivity
 
@@ -47,7 +51,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpAdapter() {
-        val adapter = RecordAdapter(onclick = {
+        val recordAdapter = RecordAdapter(onclick = {
             editRecord(it.id)
         })
 
@@ -55,7 +59,7 @@ class HomeFragment : Fragment() {
             if (result != null) {
                 when (result) {
                     is Result.Success -> {
-                        adapter.submitList(result.data)
+                        recordAdapter.submitList(result.data)
                     }
 
                     is Result.Error -> {
@@ -68,10 +72,50 @@ class HomeFragment : Fragment() {
         }
 
         binding.rvRecords.apply {
-            this.adapter = adapter
+            this.adapter = recordAdapter
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
+
+        // =============
+
+        val accountAdapter = AccountAdapter(onclick = {
+            editRecord(it.id)
+        })
+
+        homeViewModel.getAccounts().observe(viewLifecycleOwner) { result: Result<List<AccountEntity>> ->
+            when (result) {
+                is Result.Success -> {
+                    Log.d("Account", result.data.toString())
+                    accountAdapter.submitList(result.data)
+                }
+
+                is Result.Error -> {
+                    Log.e("Account", "Error: ${result.error}")
+                }
+
+                Result.Loading -> {
+                    Log.d("Account", "Loading data...")
+                }
+            }
+        }
+
+        val itemSpacing = 16 // e.g., 16dp
+        binding.rvAccounts.addItemDecoration(
+            object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                    outRect.right = itemSpacing
+                }
+            }
+        )
+
+
+        binding.rvAccounts.apply {
+            this.adapter = accountAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            setHasFixedSize(true)
+        }
+
     }
 
     private val newRecordLauncher =

@@ -13,6 +13,7 @@ import com.example.sakunusa.utils.DateConverter
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): RecordDao
+    abstract fun accountDao(): AccountDao
 
     companion object {
         @Volatile

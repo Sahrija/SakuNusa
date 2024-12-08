@@ -3,6 +3,7 @@ package com.example.sakunusa.factory
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.sakunusa.data.AccountRepository
 import com.example.sakunusa.data.Injection
 import com.example.sakunusa.data.RecordRepository
 import com.example.sakunusa.ui.records.RecordsViewModel
@@ -11,7 +12,9 @@ import com.example.sakunusa.ui.newrecord.NewRecordViewModel
 import com.example.sakunusa.ui.statistics.StatisticsViewModel
 
 
-class ViewModelFactory private constructor(private val recordRepository: RecordRepository) :
+class ViewModelFactory private constructor(private val recordRepository: RecordRepository
+,private val accountRepository: AccountRepository
+) :
     ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -19,7 +22,7 @@ class ViewModelFactory private constructor(private val recordRepository: RecordR
             modelClass.isAssignableFrom(NewRecordViewModel::class.java)
             -> NewRecordViewModel(recordRepository) as T
             modelClass.isAssignableFrom(HomeViewModel::class.java)
-            -> HomeViewModel(recordRepository) as T
+            -> HomeViewModel(recordRepository, accountRepository) as T
             modelClass.isAssignableFrom(StatisticsViewModel::class.java)
             -> StatisticsViewModel(recordRepository) as T
             modelClass.isAssignableFrom(RecordsViewModel::class.java)
@@ -34,7 +37,10 @@ class ViewModelFactory private constructor(private val recordRepository: RecordR
         private var instance: ViewModelFactory? = null
         fun getInstance(context: Context): ViewModelFactory =
             instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(Injection.provideRepository(context))
+                instance ?: ViewModelFactory(
+                    Injection.provideRecordRepository(context),
+                    Injection.provideAccountRepository(context)
+                )
             }.also { instance = it }
     }
 }
