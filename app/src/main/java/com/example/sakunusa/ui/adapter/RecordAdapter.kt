@@ -1,6 +1,5 @@
 package com.example.sakunusa.ui.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -28,7 +27,7 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
             val color = if (record.type == 0) {
                 ContextCompat.getColor(parent.context, R.color.red_500)
             } else {
-                ContextCompat.getColor(parent.context, R.color.purple_500)
+                ContextCompat.getColor(parent.context, R.color.green_500)
             }
             binding.tvAmount.setTextColor(color)
 

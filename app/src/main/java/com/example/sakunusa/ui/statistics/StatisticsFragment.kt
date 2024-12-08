@@ -1,22 +1,24 @@
 package com.example.sakunusa.ui.statistics
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.sakunusa.R
 import com.example.sakunusa.data.Result
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentStatisticsBinding
 import com.example.sakunusa.factory.ViewModelFactory
+import com.example.sakunusa.utils.Utils
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartSymbolStyleType
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.github.aachartmodel.aainfographics.aachartcreator.aa_toAAOptions
-import com.github.aachartmodel.aainfographics.aaoptionsmodel.AAStyle
 import com.github.aachartmodel.aainfographics.aaoptionsmodel.AATooltip
 
 class StatisticsFragment : Fragment() {
@@ -57,39 +59,60 @@ class StatisticsFragment : Fragment() {
         aaChartView: AAChartView,
         records: List<RecordEntity>,
     ) {
-        val simplifiedRecords = simplifyAmountPerDay(records)
-        val days: Array<String> = simplifiedRecords.keys.toTypedArray()
-        val expenses: Array<Any> = simplifiedRecords.values.toTypedArray()
+        val incomesRecords = records.filter { it.type == 1 }
+        val expensesRecords = records.filter { it.type == 0 }
+        val simplifiedIncomes = getLastSevenDays(incomesRecords)
+        val simplifiedExpenses = getLastSevenDays(expensesRecords)
+        val incomes: Array<Any> = simplifiedIncomes.values.toTypedArray()
+        val expenseInt: List<Float> = simplifiedExpenses.values.map { it * -1 }
+        val expenses: Array<Any> = Array(expenseInt.size) { expenseInt[it] }
+
+
+        val days: Array<String> = simplifiedIncomes.keys.toTypedArray()
 
         val series: Array<AASeriesElement> = arrayOf(
+            AASeriesElement()
+                .name("Income")
+                .data(incomes)
+                .borderRadiusBottomLeft(20)
+                .borderRadiusBottomRight(20)
+                .borderRadiusTopLeft(20)
+                .borderRadiusTopRight(20),
             AASeriesElement()
                 .name("Expense")
                 .data(expenses)
                 .borderRadiusBottomLeft(20)
                 .borderRadiusBottomRight(20)
                 .borderRadiusTopLeft(20)
-                .borderRadiusTopRight(20)
+                .borderRadiusTopRight(20),
         )
 
         // draw chart
-
-
         if (!isChartCreated) {
             val genericSeries: Array<Any> = Array(series.size) { series[it] }
 
             val aaTooltip = AATooltip()
                 .useHTML(true)
                 .formatter(
-                    "function () {return this.x + ': Rp. ' + this.y;}"
+                    """
+function () {
+        let wholeContentStr ='<span style=\"' + 'color:white; font-size:13px\"' + '>' + this.x + '</span><br/>';
+        let length = this.points.length;
+        for (let i = 0; i < length; i++) {
+            let thisPoint = this.points[i];
+            let prefix = (thisPoint.series.name === "Expense") ? 'Rp. -' : 'Rp.  ';
+            let yValue = thisPoint.y;
+            let spanStyleStartStr = '<span style=\"' + 'color:'+ thisPoint.color + '; font-size:13px\"' + '>● ';
+            let spanStyleEndStr = '</span> <br/>';
+            wholeContentStr += spanStyleStartStr + thisPoint.series.name + ': ' + prefix + thisPoint.y + spanStyleEndStr;
+        }
+        return wholeContentStr;
+    }
+"""
                 )
-                .valueDecimals(2)
-                .backgroundColor("#000000")
-                .borderColor("#000000")
-                .style(
-                    AAStyle()
-                        .color("#ffffff")
-                        .fontSize(12)
-                )
+                .backgroundColor("#050505")
+                .borderColor("#050505")
+
 
             val aaChartModel: AAChartModel = AAChartModel()
                 .chartType(AAChartType.Line)
@@ -106,7 +129,8 @@ class StatisticsFragment : Fragment() {
                 .series(genericSeries)
                 .colorsTheme(
                     arrayOf(
-                        "#fe117c",
+                        "#84cc16",
+                        Utils.getColorAsString(requireActivity(), R.color.red_500),
                     )
                 )
 
@@ -134,6 +158,29 @@ class StatisticsFragment : Fragment() {
                 return@mapValues entry.value.sumOf { it.amount.toDouble() }
                     .toFloat()
             }
+    }
+
+    private fun getLastSevenDays(data: List<RecordEntity>): Map<String, Float> {
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+
+        val calendar = java.util.Calendar.getInstance()
+        val last7Days = (0 until 7).map { offset ->
+            calendar.time = java.util.Date()
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, -offset)
+            dateFormat.format(calendar.time)
+        }.reversed()
+
+        Log.d("Seven", last7Days.toString())
+
+        val groupedData = data.groupBy { record ->
+            dateFormat.format(java.util.Date(record.dateTime))
+        }.mapValues { entry ->
+            entry.value.sumOf { it.amount.toDouble() }.toFloat()
+        }
+
+        return last7Days.associateWith { date ->
+            groupedData[date] ?: 0.0f
+        }
     }
 
 

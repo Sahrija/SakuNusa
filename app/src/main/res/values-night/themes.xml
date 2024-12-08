@@ -1,8 +1,8 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.SakuNusa" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/red_700</item>
+        <item name="colorPrimary">@color/red_500</item>
         <item name="colorPrimaryVariant">@color/red_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -11,8 +11,16 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <!-- Customize your theme here. -->
+        <item name="floatingActionButtonStyle">@style/Widget.SakuNusa.FloatingActionButton</item>
     </style>
+
+    <style name="Widget.SakuNusa.FloatingActionButton" parent="Base.Widget.Material3.FloatingActionButton">
+        <item name="backgroundTint">@color/red_700</item>
+        <item name="tint">@color/white</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="Base.Theme.SakuNusa" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
