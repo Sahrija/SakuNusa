@@ -1,6 +1,7 @@
 package com.example.sakunusa.model
 
 import com.example.sakunusa.data.local.entity.RecordEntity
+import java.lang.IllegalArgumentException
 import java.util.Calendar
 import java.util.Date
 
@@ -20,17 +21,23 @@ sealed class RecordItem {
         const val GROUP_BY_DAY = 0
         const val GROUP_BY_MONTH = 1
 
-        fun groupRecords(records: List<RecordEntity>, groupBy: Int): List<RecordItem> {
+        fun groupRecords(records: List<RecordEntity>, groupBy: Int = GROUP_BY_DAY): List<RecordItem> {
             val groupedRecords = mutableListOf<RecordItem>()
 
             // Group by month/year
             val groupedByDate = records.groupBy {
                 val date = Date(it.dateTime)
                 val calendar = Calendar.getInstance().apply { time = date }
-                if (groupBy == GROUP_BY_DAY){
-                    groupByDay(calendar)
-                }else{
-                    groupByMonth(calendar)
+                when (groupBy) {
+                    GROUP_BY_DAY -> {
+                        groupByDay(calendar)
+                    }
+                    GROUP_BY_MONTH -> {
+                        groupByMonth(calendar)
+                    }
+                    else -> {
+                        throw IllegalArgumentException("Unknown Group By: $groupBy")
+                    }
                 }
             }
 

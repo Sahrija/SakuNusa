@@ -53,7 +53,7 @@ class GroupedRecordAdapter(
 
             is RecordViewHolder -> {
                 val record = items[position] as RecordItem.Record
-                holder.bind(record , onclick )
+                holder.bind(record, onclick)
             }
         }
     }
@@ -79,10 +79,10 @@ class GroupedRecordAdapter(
 
         fun bind(record: RecordItem.Record, onclick: (RecordId) -> Unit) {
             category.text = record.category
-            amount.text = record.amount.toString() // Format as needed
+            amount.text = record.amount.toString()
             dateTime.text =
                 SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date(record.dateTime))
-            description.text = record.description ?: "No description"
+            description.text = record.description
 
             binding.root.setOnClickListener {
                 onclick(record.id)

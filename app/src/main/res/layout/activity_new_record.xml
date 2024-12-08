@@ -128,18 +128,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/spinnerCategory" />
-
-            <!--        <EditText-->
-            <!--            android:id="@+id/etDateTime"-->
-            <!--            android:layout_width="0dp"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_marginBottom="16dp"-->
-            <!--            android:hint="Enter Date and Time (e.g., 2023-11-25 14:30)"-->
-            <!--            android:inputType="datetime"-->
-            <!--            app:layout_constraintEnd_toEndOf="parent"-->
-            <!--            app:layout_constraintStart_toStartOf="parent"-->
-            <!--            app:layout_constraintTop_toBottomOf="@id/tvDateTimeLabel" />-->
-
+            
             <Button
                 android:id="@+id/btnPickDateTime"
                 android:layout_width="match_parent"

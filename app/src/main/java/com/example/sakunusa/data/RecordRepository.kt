@@ -74,7 +74,7 @@ class RecordRepository private constructor(
     }
 
     suspend fun getRecordById(recordId: Int): RecordEntity? {
-        return recordDao.getRecordById(recordId) // Replace with your database query
+        return recordDao.getRecordById(recordId)
     }
 
     suspend fun updateRecord(record: RecordEntity) {

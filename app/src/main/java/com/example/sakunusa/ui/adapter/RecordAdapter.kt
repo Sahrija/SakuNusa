@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.data.local.entity.RecordEntity
-import com.example.sakunusa.databinding.RecordItemBinding
+import com.example.sakunusa.databinding.ItemRecordBinding
 import com.example.sakunusa.utils.Utils.formatDate
 import java.text.NumberFormat
 import java.util.Locale
@@ -16,7 +16,7 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
 
 
     class MyViewHolder(
-        private val binding: RecordItemBinding,
+        private val binding: ItemRecordBinding,
         var onclick: (RecordEntity) -> Unit
     ) :
         RecyclerView.ViewHolder(binding.root) {
@@ -33,7 +33,7 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val binding = RecordItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding, onclick)
     }
 
@@ -44,7 +44,7 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
 
     object RecordDiffCallback : DiffUtil.ItemCallback<RecordEntity>() {
         override fun areItemsTheSame(oldItem: RecordEntity, newItem: RecordEntity): Boolean {
-            return oldItem.id == newItem.id // Assuming 'id' is the unique identifier
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: RecordEntity, newItem: RecordEntity): Boolean {
