@@ -9,12 +9,16 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.sakunusa.R
+import com.example.sakunusa.data.Result
+import com.example.sakunusa.data.local.entity.AccountEntity
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.ActivityNewRecordBinding
 import com.example.sakunusa.factory.ViewModelFactory
+import com.example.sakunusa.utils.SpinnerItem
 import com.example.sakunusa.utils.Utils
 import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
@@ -28,7 +32,9 @@ class NewRecordActivity : AppCompatActivity() {
 
     private val categories = listOf("None", "Food", "Transport", "Entertainment", "Bills", "Others")
 
-    private lateinit var viewModel: NewRecordViewModel
+    private val viewModel: NewRecordViewModel by viewModels {
+        ViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,9 +45,6 @@ class NewRecordActivity : AppCompatActivity() {
     }
 
     private fun setupView() {
-        val factory = ViewModelFactory.getInstance(this)
-        viewModel = ViewModelProvider(this, factory)[NewRecordViewModel::class.java]
-
         recordId = intent.getIntExtra(EXTRA_RECORD_ID, -1)
 
         if (recordId != -1) {
@@ -64,13 +67,38 @@ class NewRecordActivity : AppCompatActivity() {
         binding.btnPickDateTime.setOnClickListener {
             pickDateTime()
         }
+        val spinnerCategoryAdapter =
+            ArrayAdapter(this, AndroidR.layout.simple_spinner_item, categories).apply {
+                setDropDownViewResource(AndroidR.layout.simple_spinner_dropdown_item)
+            }
+        binding.spinnerCategory.adapter = spinnerCategoryAdapter
 
 
-        val spinnerCategory: Spinner = binding.spinnerCategory
-        val adapter = ArrayAdapter(this, AndroidR.layout.simple_spinner_item, categories).apply {
-            setDropDownViewResource(AndroidR.layout.simple_spinner_dropdown_item)
+        viewModel.getAccounts().observe(this) { result: Result<List<AccountEntity>> ->
+            when (result) {
+                is Result.Success -> {
+                    val spinnerItems: List<SpinnerItem> =
+                        result.data.map { SpinnerItem(it.id, it.name) }
+
+                    val spinnerAccountAdapter =
+                        ArrayAdapter(
+                            this,
+                            AndroidR.layout.simple_spinner_item,
+                            spinnerItems
+                        ).apply {
+                            setDropDownViewResource(AndroidR.layout.simple_spinner_dropdown_item)
+                        }
+
+                    binding.spinnerAccount.adapter = spinnerAccountAdapter
+                }
+
+                is Result.Error -> {
+                }
+
+                Result.Loading -> {
+                }
+            }
         }
-        spinnerCategory.adapter = adapter
 
         viewModel.selectedDate.observe(this) {
             binding.btnPickDateTime.text = Utils.formatDate(it)
@@ -80,6 +108,8 @@ class NewRecordActivity : AppCompatActivity() {
             with(binding) {
                 var amount = etAmount.text.toString().trim().toFloat()
                 val category = categories[spinnerCategory.selectedItemPosition]
+                val selectedItem = spinnerAccount.selectedItem as SpinnerItem
+                val account = selectedItem.id
                 val description = etDescription.text.toString().trim()
                 val type = when (binding.rgType.checkedRadioButtonId) {
                     binding.rbIncome.id -> 1
@@ -96,7 +126,7 @@ class NewRecordActivity : AppCompatActivity() {
                         id = recordId,
                         amount = amount,
                         type = type,
-                        accountId = 0,
+                        accountId = account,
                         category = category,
                         dateTime = viewModel.selectedDate.value ?: 0,
                         description = description,
@@ -107,7 +137,7 @@ class NewRecordActivity : AppCompatActivity() {
                         id = 0,
                         amount = amount,
                         type = type,
-                        accountId = 0,
+                        accountId = account,
                         category = category,
                         dateTime = viewModel.selectedDate.value ?: 0,
                         description = description,

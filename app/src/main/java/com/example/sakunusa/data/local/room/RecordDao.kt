@@ -17,17 +17,12 @@ interface RecordDao {
     @Query("SELECT * FROM records WHERE accountId = :accountId ORDER BY dateTime DESC")
     fun getAllRecords(accountId: Int): LiveData<List<RecordEntity>>
 
-    @Query("SELECT * FROM records WHERE accountId = :accountId ORDER BY dateTime DESC")
-    fun getAllRecordsByDateDesc(accountId: Int): LiveData<List<RecordEntity>>
-
-    @Query("SELECT * FROM records WHERE accountId = :accountId ORDER BY dateTime ASC")
-    fun getAllRecordsByDateAsc(accountId: Int): LiveData<List<RecordEntity>>
 
     @Query("SELECT * FROM records WHERE accountId = :accountId AND dateTime BETWEEN :startDate AND :endDate ORDER BY dateTime DESC")
     fun getAllRecords(accountId: Int, startDate: Date, endDate: Date): LiveData<List<RecordEntity>>
 
     @Insert
-    fun insertRecord(record: RecordEntity): Long
+    suspend fun insertRecord(record: RecordEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertRecords(records: List<RecordEntity>)
@@ -40,4 +35,22 @@ interface RecordDao {
 
     @Query("SELECT * FROM records WHERE id = :recordId ")
     suspend fun getRecordById(recordId: Int): RecordEntity?
+
+    @Query("""
+        SELECT * FROM records 
+        WHERE accountId IN (
+            SELECT id FROM account WHERE isSelected = 1
+        )
+        ORDER BY dateTime ASC
+    """)
+
+    fun getRecordsForSelectedAccountsAsc(): LiveData<List<RecordEntity>>
+    @Query("""
+        SELECT * FROM records 
+        WHERE accountId IN (
+            SELECT id FROM account WHERE isSelected = 1
+        )
+        ORDER BY dateTime DESC
+    """)
+    fun getRecordsForSelectedAccountsDesc(): LiveData<List<RecordEntity>>
 }

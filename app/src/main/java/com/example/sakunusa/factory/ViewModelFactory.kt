@@ -8,6 +8,7 @@ import com.example.sakunusa.data.Injection
 import com.example.sakunusa.data.RecordRepository
 import com.example.sakunusa.ui.records.RecordsViewModel
 import com.example.sakunusa.ui.home.HomeViewModel
+import com.example.sakunusa.ui.newaccount.NewAccountViewModel
 import com.example.sakunusa.ui.newrecord.NewRecordViewModel
 import com.example.sakunusa.ui.statistics.StatisticsViewModel
 
@@ -20,13 +21,15 @@ class ViewModelFactory private constructor(private val recordRepository: RecordR
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(NewRecordViewModel::class.java)
-            -> NewRecordViewModel(recordRepository) as T
+            -> NewRecordViewModel(recordRepository, accountRepository) as T
             modelClass.isAssignableFrom(HomeViewModel::class.java)
             -> HomeViewModel(recordRepository, accountRepository) as T
             modelClass.isAssignableFrom(StatisticsViewModel::class.java)
             -> StatisticsViewModel(recordRepository) as T
             modelClass.isAssignableFrom(RecordsViewModel::class.java)
             -> RecordsViewModel(recordRepository) as T
+            modelClass.isAssignableFrom(NewAccountViewModel::class.java)
+            -> NewAccountViewModel(accountRepository) as T
 
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

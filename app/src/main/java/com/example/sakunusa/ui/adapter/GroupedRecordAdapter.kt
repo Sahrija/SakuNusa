@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.R
 import com.example.sakunusa.databinding.ItemRecordBinding
@@ -15,7 +16,7 @@ import java.util.Locale
 typealias RecordId = Int
 
 class GroupedRecordAdapter(
-    private val items: List<RecordItem>,
+    private var items: List<RecordItem>,
     private var onclick: (RecordId) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -40,7 +41,7 @@ class GroupedRecordAdapter(
         } else {
             val binding =
                 ItemRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            RecordViewHolder(binding)
+            RecordViewHolder(binding, parent)
         }
     }
 
@@ -70,7 +71,7 @@ class GroupedRecordAdapter(
         }
     }
 
-    class RecordViewHolder(private val binding: ItemRecordBinding) :
+    class RecordViewHolder(private val binding: ItemRecordBinding, val parent: ViewGroup) :
         RecyclerView.ViewHolder(binding.root) {
         private val category: TextView = binding.tvCategory
         private val amount: TextView = binding.tvAmount
@@ -78,6 +79,13 @@ class GroupedRecordAdapter(
         private val description: TextView = binding.tvDescription
 
         fun bind(record: RecordItem.Record, onclick: (RecordId) -> Unit) {
+            val color = if (record.type == 0) {
+                ContextCompat.getColor(parent.context, R.color.red_500)
+            } else {
+                ContextCompat.getColor(parent.context, R.color.green_500)
+            }
+            binding.tvAmount.setTextColor(color)
+
             category.text = record.category
             amount.text = record.amount.toString()
             dateTime.text =
@@ -88,5 +96,10 @@ class GroupedRecordAdapter(
                 onclick(record.id)
             }
         }
+    }
+
+    fun updateData(newData: List<RecordItem>) {
+        items = newData
+        notifyDataSetChanged()
     }
 }

@@ -4,13 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.data.Result
@@ -20,6 +19,7 @@ import com.example.sakunusa.databinding.FragmentHomeBinding
 import com.example.sakunusa.factory.ViewModelFactory
 import com.example.sakunusa.ui.adapter.AccountAdapter
 import com.example.sakunusa.ui.adapter.RecordAdapter
+import com.example.sakunusa.ui.newaccount.NewAccountActivity
 import com.example.sakunusa.ui.newrecord.NewRecordActivity
 
 class HomeFragment : Fragment() {
@@ -27,25 +27,27 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var homeViewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
+
+    private lateinit var accountAdapter : AccountAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val factory = ViewModelFactory.getInstance(requireActivity())
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
-
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.btnNewAccount.setOnClickListener {
+            val intent = Intent(requireActivity(), NewAccountActivity::class.java)
+            newAccountLauncher.launch(intent)
+        }
 
         setUpAdapter()
     }
@@ -79,35 +81,35 @@ class HomeFragment : Fragment() {
 
         // =============
 
-        val accountAdapter = AccountAdapter(onclick = {
-            editRecord(it.id)
+        accountAdapter = AccountAdapter(
+            onClick = {
+                homeViewModel.toggleAccountToSelected(it)
+            }, onLongClick = {
+                editAccount(it.id)
+            })
+
+        homeViewModel.getAccounts()
+            .observe(viewLifecycleOwner) { result: Result<List<AccountEntity>> ->
+                when (result) {
+                    is Result.Success -> {
+                        accountAdapter.submitList(result.data)
+                        homeViewModel.fetchRecords()
+                    }
+
+                    is Result.Error -> {}
+                    Result.Loading -> {}
+                }
+            }
+
+
+        val itemSpacing = 16
+        binding.rvAccounts.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
+            ) {
+                outRect.right = itemSpacing
+            }
         })
-
-        homeViewModel.getAccounts().observe(viewLifecycleOwner) { result: Result<List<AccountEntity>> ->
-            when (result) {
-                is Result.Success -> {
-                    Log.d("Account", result.data.toString())
-                    accountAdapter.submitList(result.data)
-                }
-
-                is Result.Error -> {
-                    Log.e("Account", "Error: ${result.error}")
-                }
-
-                Result.Loading -> {
-                    Log.d("Account", "Loading data...")
-                }
-            }
-        }
-
-        val itemSpacing = 16 // e.g., 16dp
-        binding.rvAccounts.addItemDecoration(
-            object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-                    outRect.right = itemSpacing
-                }
-            }
-        )
 
 
         binding.rvAccounts.apply {
@@ -118,15 +120,24 @@ class HomeFragment : Fragment() {
 
     }
 
+    private fun editAccount(id: Int) {
+        val intent = Intent(requireActivity(), NewAccountActivity::class.java)
+        intent.putExtra(NewAccountActivity.EXTRA_ACCOUNT_ID, id)
+        newAccountLauncher.launch(intent)
+    }
+
     private val newRecordLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.getParcelableExtra<RecordEntity>("new_record")
+                accountAdapter.notifyDataSetChanged()
             }
         }
 
+    private val newAccountLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        }
+
     private fun editRecord(recordId: Int) {
-        Log.d("Test id", recordId.toString())
         val intent = Intent(requireActivity(), NewRecordActivity::class.java)
         intent.putExtra(NewRecordActivity.EXTRA_RECORD_ID, recordId)
         newRecordLauncher.launch(intent)

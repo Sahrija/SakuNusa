@@ -18,6 +18,6 @@ class StatisticsViewModel(private val repository: RecordRepository) : ViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        repository.getRecords("desc").removeObserver { }
+        repository.getRecords( "desc").removeObserver { }
     }
 }

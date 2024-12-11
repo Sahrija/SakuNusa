@@ -3,10 +3,13 @@ package com.example.sakunusa.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.sakunusa.data.AccountRepository
 import com.example.sakunusa.data.RecordRepository
 import com.example.sakunusa.data.Result
+import com.example.sakunusa.data.local.entity.AccountEntity
 import com.example.sakunusa.data.local.entity.RecordEntity
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val recordRepository: RecordRepository,
@@ -21,12 +24,22 @@ class HomeViewModel(
     }
     val records: LiveData<Result<List<RecordEntity>>> get() = _records
 
+    fun fetchRecords() {
+        _records.postValue(recordRepository.getRecords("desc").value)
+    }
+
     override fun onCleared() {
         super.onCleared()
         recordRepository.getRecords("desc").removeObserver { }
         accountRepository.getAccounts().removeObserver { }
     }
 
-
     fun getAccounts() = accountRepository.getAccounts()
+
+    fun toggleAccountToSelected(account: AccountEntity) {
+        viewModelScope.launch {
+            val updatedAccount = account.copy(isSelected = !account.isSelected)
+            accountRepository.updateAccount(updatedAccount)
+        }
+    }
 }

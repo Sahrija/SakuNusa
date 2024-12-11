@@ -2,12 +2,10 @@ package com.example.sakunusa.ui.records
 
 import android.app.Activity
 import android.content.Intent
-import com.example.sakunusa.ui.adapter.GroupedRecordAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +15,7 @@ import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentRecordsBinding
 import com.example.sakunusa.factory.ViewModelFactory
 import com.example.sakunusa.model.RecordItem
+import com.example.sakunusa.ui.adapter.GroupedRecordAdapter
 import com.example.sakunusa.ui.newrecord.NewRecordActivity
 
 class RecordsFragment : Fragment() {
@@ -45,32 +44,28 @@ class RecordsFragment : Fragment() {
     }
 
     private fun setUpAdapter() {
-        var adapter: GroupedRecordAdapter?
+        val adapter = GroupedRecordAdapter(listOf()) { recordId: Int ->
+            editRecord(recordId)
+        }
+
+        binding.rvRecords.apply {
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+        }
 
         recordsViewModel.records.observe(viewLifecycleOwner) { result ->
-            if (result != null) {
-                when (result) {
-                    is Result.Success -> {
-                        val records: List<RecordEntity> = result.data
-                        val groupedList = RecordItem.groupRecords(records, RecordItem.GROUP_BY_DAY)
-                        adapter = GroupedRecordAdapter(groupedList,
-                            onclick = { recordId: Int ->
-                                editRecord(recordId)
-                            })
+            when (result) {
+                is Result.Success -> {
+                    val records: List<RecordEntity> = result.data
+                    val groupedList = RecordItem.groupRecords(records, RecordItem.GROUP_BY_DAY)
+                    adapter.updateData(groupedList)
+                }
 
-                        binding.rvRecords.apply {
-                            this.adapter = adapter
-                            layoutManager = LinearLayoutManager(context)
-                            setHasFixedSize(true)
-                        }
-//                        adapter.submitList(groupedList)
-                    }
+                is Result.Error -> {
+                }
 
-                    is Result.Error -> {
-                    }
-
-                    Result.Loading -> {
-                    }
+                Result.Loading -> {
                 }
             }
         }
@@ -79,8 +74,7 @@ class RecordsFragment : Fragment() {
     private val newRecordLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val newRecord = result.data?.getParcelableExtra<RecordEntity>("new_record")
-                Toast.makeText(requireActivity(), "Edited", Toast.LENGTH_SHORT).show()
+                result.data?.getParcelableExtra<RecordEntity>("new_record")
             }
         }
 

@@ -15,9 +15,7 @@ class AccountRepository private constructor(
     private val mediatorLiveDataResult = MediatorLiveData<Result<List<AccountEntity>>>()
 
     fun getAccounts(): LiveData<Result<List<AccountEntity>>> {
-        val source =
-            accountDao.getAccounts()
-
+        val source = accountDao.getAccounts()
 
         mediatorLiveDataResult.addSource(source) {
             mediatorLiveDataResult.value = Result.Success(it)
@@ -26,6 +24,18 @@ class AccountRepository private constructor(
         return mediatorLiveDataResult
     }
 
+    fun getAccountById(accountId: Int): LiveData<AccountEntity> {
+        return accountDao.getAccountById(accountId)
+    }
+
+    suspend fun newAccount(account: AccountEntity): Boolean {
+        accountDao.newAccount(account)
+        return true
+    }
+
+    suspend fun updateAccount(account: AccountEntity) {
+        accountDao.updateAccount(account)
+    }
 
     companion object {
         @Volatile

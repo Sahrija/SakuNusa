@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header"
         tools:itemCount="3"
-        tools:listitem="@layout/record_item" />
+        tools:listitem="@layout/item_record" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/header"
@@ -34,34 +34,38 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/textView3"
-                style="@style/TextAppearance.Material3.TitleMedium"
-                android:layout_width="match_parent"
+                android:id="@+id/textView2"
+                style="@style/TextAppearance.Material3.TitleLarge"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Accounts"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_new_account"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_new_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:text="+ Add Account"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_accounts"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:layout_marginTop="20dp"
                 android:foregroundGravity="center"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
                 tools:listitem="@layout/item_account" />
-
-            <Button
-                android:id="@+id/btn_all_records"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All Records"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

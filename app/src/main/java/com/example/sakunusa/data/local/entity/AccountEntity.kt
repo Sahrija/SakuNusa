@@ -13,4 +13,6 @@ data class AccountEntity(
     val id: Int = 0,
     val name: String,
     val startingAmount: Float,
+    @ColumnInfo(defaultValue = "false")
+    val isSelected: Boolean,
 ) : Parcelable

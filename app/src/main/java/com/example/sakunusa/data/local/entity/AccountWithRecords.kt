@@ -7,7 +7,7 @@ data class AccountWithRecords(
     @Embedded val account: AccountEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "id"
+        entityColumn = "accountId",
     )
     val records: List<RecordEntity>
 )
