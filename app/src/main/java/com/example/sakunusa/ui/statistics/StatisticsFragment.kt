@@ -56,7 +56,7 @@ class StatisticsFragment : Fragment() {
     private fun setupChart(
         records: List<RecordEntity>,
     ) {
-        val lineChartView = binding.chart
+        val lineChartView = binding.lineChartView
 
         val incomesRecords = records.filter { it.type == 1 }
         val expensesRecords = records.filter { it.type == 0 }
@@ -136,7 +136,7 @@ function () {
             )
         }
 
-        val pieChartView = binding.chartPie
+        val pieChartView = binding.pieChartView
         val recordsByCategory: Map<String, Float> =
             records.filter { it.type == 0 }.groupBy { record ->
                 record.category

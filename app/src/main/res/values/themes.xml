@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.SakuNusa" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryVariant">@color/red_700</item>
+        <item name="colorPrimary">@color/teal_200</item>
+        <item name="colorPrimaryVariant">@color/teal_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -14,12 +14,28 @@
 
         <!-- Customize your theme here. -->
         <item name="floatingActionButtonStyle">@style/Widget.SakuNusa.FloatingActionButton</item>
+
     </style>
 
     <style name="Widget.SakuNusa.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
         <item name="backgroundTint">@color/red_500</item>
         <item name="tint">@color/white</item>
     </style>
+
+    <style name="BottomNavTextHidden" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">0sp</item>
+    </style>
+
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemActiveIndicatorStyle">@style/CustomActiveIndicator</item>
+        <item name="itemBackground">@color/green_500</item>
+        <item name="android:background">@color/red_500</item>
+    </style>
+
+    <style name="CustomActiveIndicator" parent="ShapeAppearance.Material3.NavigationBarView.ActiveIndicator">
+        <item name="android:color">@color/green_500</item>
+    </style>
+
 
     <style name="Theme.SakuNusa.NoActionBar">
         <item name="windowActionBar">false</item>

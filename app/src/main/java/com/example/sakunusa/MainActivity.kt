@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.ActivityMainBinding
 import com.example.sakunusa.ui.newrecord.NewRecordActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -30,17 +31,28 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+//        val drawerLayout: DrawerLayout = binding.drawerLayout
+//        val navView: NavigationView = binding.navView
+//        val navController = findNavController(R.id.nav_host_fragment_content_main)
+//
+//        appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.nav_home, R.id.nav_records, R.id.nav_statistics
+//            ), drawerLayout
+//        )
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        navView.setupWithNavController(navController)
 
-        appBarConfiguration = AppBarConfiguration(
+        val bottomNavView: BottomNavigationView = findViewById(R.id.nav_view)
+
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_records, R.id.nav_statistics
-            ), drawerLayout
+            )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        bottomNavView.setupWithNavController(navController)
 
 
         binding.appBarMain.fab.setOnClickListener {
