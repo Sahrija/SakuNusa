@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
         ViewModelFactory.getInstance(requireActivity())
     }
 
-    private lateinit var accountAdapter : AccountAdapter
+    private lateinit var accountAdapter: AccountAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -60,15 +60,10 @@ class HomeFragment : Fragment() {
         homeViewModel.records.observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 when (result) {
-                    is Result.Success -> {
-                        recordAdapter.submitList(result.data)
-                    }
-
-                    is Result.Error -> {
-                    }
-
-                    Result.Loading -> {
-                    }
+                    is Result.Success -> recordAdapter.submitList(result.data)
+                    is Result.Error -> {}
+                    is Result.Loading -> {}
+                    else -> {}
                 }
             }
         }
@@ -95,9 +90,9 @@ class HomeFragment : Fragment() {
                         accountAdapter.submitList(result.data)
                         homeViewModel.fetchRecords()
                     }
-
                     is Result.Error -> {}
                     Result.Loading -> {}
+                    else -> {}
                 }
             }
 
@@ -129,7 +124,6 @@ class HomeFragment : Fragment() {
     private val newRecordLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                accountAdapter.notifyDataSetChanged()
             }
         }
 

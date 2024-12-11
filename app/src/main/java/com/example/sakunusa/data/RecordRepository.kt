@@ -77,16 +77,33 @@ class RecordRepository private constructor(
         recordDao.insertRecord(record)
 
         val account = accountDao.getAccountByIdDirect(record.accountId)
-        val newAccount: AccountEntity =
+        val updatedAccount: AccountEntity =
             account.copy(startingAmount = account.startingAmount + record.amount)
-        accountDao.updateAccount(newAccount)
+        accountDao.updateAccount(updatedAccount)
+        Log.d("Account change", updatedAccount.toString())
     }
 
     suspend fun updateRecord(record: RecordEntity) {
+        val oldRecord = recordDao.getRecordById(record.id)
+        val updatedAmountInterval: Float = record.amount - (oldRecord?.amount ?: 0F)
+        val account = accountDao.getAccountByIdDirect(record.accountId)
+        val updatedAccount: AccountEntity =
+            account.copy(startingAmount = account.startingAmount + updatedAmountInterval)
+        accountDao.updateAccount(updatedAccount)
+
         recordDao.updateRecord(record)
     }
 
     suspend fun deleteRecord(recordId: Int): Boolean {
+        val record = recordDao.getRecordById(recordId)
+        record?.let {
+            val account = accountDao.getAccountByIdDirect(it.accountId)
+            val newAccount: AccountEntity =
+                account.copy(startingAmount = account.startingAmount - record.amount)
+            Log.d("Account change", account.startingAmount.toString() + record.amount.toString())
+            accountDao.updateAccount(newAccount)
+        }
+
         return recordDao.deleteRecordById(recordId) > 0
     }
 

@@ -21,6 +21,9 @@ interface AccountDao {
     @Update
     suspend fun updateAccount(account: AccountEntity)
 
+    @Query("UPDATE account SET isSelected = :isSelected WHERE id = :accountId")
+    suspend fun setAccountSelected(accountId: Int, isSelected: Boolean)
+
     @Query("SELECT * FROM account WHERE id = :accountId")
     fun getAccountById(accountId: Int): LiveData<AccountEntity>
 

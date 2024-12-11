@@ -31,15 +31,13 @@ class HomeViewModel(
     override fun onCleared() {
         super.onCleared()
         recordRepository.getRecords("desc").removeObserver { }
-        accountRepository.getAccounts().removeObserver { }
     }
 
-    fun getAccounts() = accountRepository.getAccounts()
+    fun getAccounts(): LiveData<Result<List<AccountEntity>>> = accountRepository.getAccounts()
 
     fun toggleAccountToSelected(account: AccountEntity) {
         viewModelScope.launch {
-            val updatedAccount = account.copy(isSelected = !account.isSelected)
-            accountRepository.updateAccount(updatedAccount)
+            accountRepository.toggleAccountToSelected(account)
         }
     }
 }

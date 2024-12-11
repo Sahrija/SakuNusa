@@ -57,5 +57,5 @@ class NewRecordViewModel(
         }
     }
 
-    fun getAccounts() = accountRepository.getAccounts()
+    fun getAccounts(): LiveData<Result<List<AccountEntity>>> = accountRepository.getAccounts()
 }

@@ -37,6 +37,11 @@ class AccountRepository private constructor(
         accountDao.updateAccount(account)
     }
 
+    suspend fun toggleAccountToSelected(account: AccountEntity) {
+        val isSelected = !account.isSelected
+        accountDao.setAccountSelected(account.id, isSelected)
+    }
+
     companion object {
         @Volatile
         private var instance: AccountRepository? = null
