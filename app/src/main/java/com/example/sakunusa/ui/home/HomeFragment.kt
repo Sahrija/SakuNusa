@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.data.Result
 import com.example.sakunusa.data.local.entity.AccountEntity
-import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.FragmentHomeBinding
 import com.example.sakunusa.factory.ViewModelFactory
 import com.example.sakunusa.ui.adapter.AccountAdapter
@@ -63,7 +62,6 @@ class HomeFragment : Fragment() {
                     is Result.Success -> recordAdapter.submitList(result.data)
                     is Result.Error -> {}
                     is Result.Loading -> {}
-                    else -> {}
                 }
             }
         }
@@ -92,7 +90,6 @@ class HomeFragment : Fragment() {
                     }
                     is Result.Error -> {}
                     Result.Loading -> {}
-                    else -> {}
                 }
             }
 

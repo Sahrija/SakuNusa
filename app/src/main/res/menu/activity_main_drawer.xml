@@ -7,18 +7,22 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_home_24"
             android:title="@string/menu_home"
             app:destination="@id/home"
             app:popUpTo="@id/nav_home"
             app:popUpToInclusive="true"/>
         <item
             android:id="@+id/nav_records"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_records_24"
             android:title="@string/menu_records" />
         <item
             android:id="@+id/nav_statistics"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_statistics_24"
             android:title="@string/menu_statistics" />
+        <item
+            android:id="@+id/nav_analytics"
+            android:icon="@drawable/ic_analytics_24"
+            android:title="@string/menu_analytics" />
     </group>
 </menu>

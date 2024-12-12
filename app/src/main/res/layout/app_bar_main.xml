@@ -19,13 +19,9 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.SakuNusa.PopupOverlay" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    <include-->
-<!--        android:id="@+id/include"-->
-<!--        layout="@layout/content_main" />-->
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment_content_main"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
@@ -48,7 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_add_24" />
+            app:srcCompat="@drawable/ic_add_24"
+            android:contentDescription="@string/new_records" />
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

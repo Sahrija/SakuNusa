@@ -22,4 +22,10 @@
         android:name="com.example.sakunusa.ui.statistics.StatisticsFragment"
         android:label="@string/menu_statistics"
         tools:layout="@layout/fragment_statistics" />
+
+    <fragment
+        android:id="@+id/nav_analytics"
+        android:name="com.example.sakunusa.ui.analytics.AnalyticsFragment"
+        android:label="@string/menu_statistics"
+        tools:layout="@layout/fragment_analytics" />
 </navigation>
