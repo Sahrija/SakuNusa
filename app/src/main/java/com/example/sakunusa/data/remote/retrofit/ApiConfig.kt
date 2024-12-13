@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiConfig {
 
 
-    private const val baseUrl = "https://event-api.dicoding.dev"
+    private const val baseUrl = "https://sakunusaml-1043929878203.asia-southeast2.run.app"
 
     fun getApiService(): ApiService {
         val loggingInterceptor = HttpLoggingInterceptor()

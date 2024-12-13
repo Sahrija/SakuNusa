@@ -40,7 +40,7 @@ class NewAccountActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnSubmit.setOnClickListener {
+        binding.btnSave.setOnClickListener {
 
             val name = binding.etName.text.toString()
             val startingAmount: Float =

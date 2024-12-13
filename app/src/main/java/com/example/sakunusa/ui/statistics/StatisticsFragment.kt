@@ -108,7 +108,7 @@ function () {
 
             val aaChartModel: AAChartModel = AAChartModel()
                 .chartType(AAChartType.Line)
-                .title("7 hari terakhir")
+                .title("Last 7 days")
                 .categories(days)
 
                 .backgroundColor(com.google.android.material.R.color.mtrl_btn_transparent_bg_color)

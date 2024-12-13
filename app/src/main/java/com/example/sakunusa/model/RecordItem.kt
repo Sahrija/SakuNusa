@@ -6,7 +6,8 @@ import java.util.Calendar
 import java.util.Date
 
 sealed class RecordItem {
-    data class GroupHeader(val title: String, val balance: Float) : RecordItem()
+    data class GroupHeader(val title: String, val totalAmount: Float) : RecordItem()
+
     data class Record(
         val id: Int,
         val accountId: Int,
@@ -22,7 +23,10 @@ sealed class RecordItem {
         const val GROUP_BY_DAY = 0
         const val GROUP_BY_MONTH = 1
 
-        fun groupRecords(records: List<RecordEntity>, groupBy: Int = GROUP_BY_DAY): List<RecordItem> {
+        fun groupRecords(
+            records: List<RecordEntity>,
+            groupBy: Int = GROUP_BY_DAY
+        ): List<RecordItem> {
             val groupedRecords = mutableListOf<RecordItem>()
 
             // Group by month/year
@@ -33,9 +37,11 @@ sealed class RecordItem {
                     GROUP_BY_DAY -> {
                         groupByDay(calendar)
                     }
+
                     GROUP_BY_MONTH -> {
                         groupByMonth(calendar)
                     }
+
                     else -> {
                         throw IllegalArgumentException("Unknown Group By: $groupBy")
                     }
@@ -47,7 +53,7 @@ sealed class RecordItem {
                 val balance = recordList.sumOf { it.amount.toDouble() }.toFloat()
 
                 // Add header
-                groupedRecords.add(GroupHeader(title = dateKey, balance = balance))
+                groupedRecords.add(GroupHeader(title = dateKey, totalAmount = balance))
 
                 // Add all records
                 groupedRecords.addAll(recordList.map {
@@ -66,10 +72,15 @@ sealed class RecordItem {
             return groupedRecords
         }
 
-        private fun groupByDay(calendar: Calendar) : String{
-            return "${calendar.get(Calendar.DATE)} ${calendar.get(Calendar.MONTH) + 1} ${calendar.get(Calendar.YEAR)}"
+        private fun groupByDay(calendar: Calendar): String {
+            return "${calendar.get(Calendar.DATE)} ${calendar.get(Calendar.MONTH) + 1} ${
+                calendar.get(
+                    Calendar.YEAR
+                )
+            }"
         }
-        private fun groupByMonth(calendar: Calendar) : String{
+
+        private fun groupByMonth(calendar: Calendar): String {
             return "${calendar.get(Calendar.MONTH) + 1} ${calendar.get(Calendar.YEAR)}"
         }
     }

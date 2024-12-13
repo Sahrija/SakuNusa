@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.R
 import com.example.sakunusa.databinding.ItemRecordBinding
 import com.example.sakunusa.model.RecordItem
+import com.example.sakunusa.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,7 +68,7 @@ class GroupedRecordAdapter(
 
         fun bind(header: RecordItem.GroupHeader) {
             title.text = header.title
-            balance.text = header.balance.toString()
+            balance.text = Utils.formatAmount(header.totalAmount)
         }
     }
 
@@ -87,7 +88,7 @@ class GroupedRecordAdapter(
             binding.tvAmount.setTextColor(color)
 
             category.text = record.category
-            amount.text = record.amount.toString()
+            amount.text = Utils.formatAmount(record.amount)
             dateTime.text =
                 SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date(record.dateTime))
             description.text = record.description

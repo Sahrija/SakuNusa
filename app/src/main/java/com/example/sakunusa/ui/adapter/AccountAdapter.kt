@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.sakunusa.R
 import com.example.sakunusa.data.local.entity.AccountEntity
 import com.example.sakunusa.databinding.ItemAccountBinding
+import com.example.sakunusa.utils.Utils
 
 class AccountAdapter(
     private var onClick: (AccountEntity) -> Unit,
@@ -29,7 +30,7 @@ class AccountAdapter(
                 ContextCompat.getColor(parent.context, R.color.on_header)
             }
 
-            with(binding){
+            with(binding) {
                 root.setBackgroundResource(
                     if (accountEntity.isSelected) R.drawable.rounded_background else R.drawable.rounded_background_dashed
                 )
@@ -37,7 +38,7 @@ class AccountAdapter(
                 tvBalance.setTextColor(textColor)
 
                 tvName.text = accountEntity.name
-                tvBalance.text = accountEntity.startingAmount.toString()
+                tvBalance.text = Utils.formatAmount(accountEntity.startingAmount)
 
                 root.setOnClickListener { onClick(accountEntity) }
                 root.setOnLongClickListener {

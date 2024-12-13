@@ -8,7 +8,8 @@
     <color name="red_700">#b91c1c</color>
     <color name="green_500">#22c55e</color>
     <color name="green_700">#15803d</color>
-    <color name="teal_200">#15B7B9</color>
+    <color name="teal_500">#15B7B9</color>
+    <color name="teal_500_20">#3015B7B9</color>
     <color name="teal_700">#296E6F</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

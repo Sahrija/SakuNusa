@@ -30,7 +30,19 @@ class NewRecordActivity : AppCompatActivity() {
     private var isEdit: Boolean = false
     private var recordId: Int = -1
 
-    private val categories = listOf("None", "Food", "Transport", "Entertainment", "Bills", "Others")
+    private val categories = listOf(
+        "None",
+        "Food",
+        "Transport",
+        "Entertainment",
+        "Bills",
+        "Health",
+        "Gift",
+        "Investment",
+        "Salary",
+        "Freelance",
+        "Others",
+    )
 
     private val viewModel: NewRecordViewModel by viewModels {
         ViewModelFactory.getInstance(this)
@@ -68,8 +80,8 @@ class NewRecordActivity : AppCompatActivity() {
             pickDateTime()
         }
         val spinnerCategoryAdapter =
-            ArrayAdapter(this, AndroidR.layout.simple_spinner_item, categories).apply {
-                setDropDownViewResource(AndroidR.layout.simple_spinner_dropdown_item)
+            ArrayAdapter(this, R.layout.item_spinner, categories).apply {
+                setDropDownViewResource(com.google.android.material.R.layout.support_simple_spinner_dropdown_item)
             }
         binding.spinnerCategory.adapter = spinnerCategoryAdapter
 
@@ -104,7 +116,7 @@ class NewRecordActivity : AppCompatActivity() {
             binding.btnPickDateTime.text = Utils.formatDate(it)
         }
 
-        binding.btnSubmit.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             with(binding) {
                 var amount = etAmount.text.toString().trim().toFloat()
                 val category = categories[spinnerCategory.selectedItemPosition]
@@ -216,7 +228,7 @@ class NewRecordActivity : AppCompatActivity() {
 
         viewModel.setSelectedDate(record.dateTime)
         binding.etDescription.setText(record.description)
-        binding.etAmount.setText(amount.toString())
+        binding.etAmount.setText(amount.toInt().toString())
         binding.spinnerCategory.setSelection(categories.indexOf(record.category))
         binding.rgType.check(
             when (record.type) {

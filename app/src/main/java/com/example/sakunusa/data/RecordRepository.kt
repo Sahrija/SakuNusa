@@ -4,16 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.example.sakunusa.data.local.entity.AccountEntity
+import com.example.sakunusa.data.local.entity.AnomalyEntity
+import com.example.sakunusa.data.local.entity.AnomalyWithRecord
 import com.example.sakunusa.data.local.room.RecordDao
-import com.example.sakunusa.data.remote.response.RecordItem
-import com.example.sakunusa.data.remote.response.RecordsResponse
 import com.example.sakunusa.data.remote.retrofit.ApiService
 import com.example.sakunusa.utils.AppExecutors
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.data.local.room.AccountDao
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.sakunusa.data.remote.retrofit.AnomalyRequestBody
 
 class RecordRepository private constructor(
     private val apiService: ApiService,
@@ -23,35 +21,52 @@ class RecordRepository private constructor(
 ) {
     private val mediatorLiveDataResult = MediatorLiveData<Result<List<RecordEntity>>>()
 
-    fun fetchAllRecords(): LiveData<Result<List<RecordEntity>>> {
-        mediatorLiveDataResult.value = Result.Loading
-        val client = apiService.getRecords()
+    private suspend fun requestAnomaly(
+        record: RecordEntity,
+        recordId: Int
+    ): Result<AnomalyEntity> {
+        val input_amount = record.amount
 
-        client.enqueue(object : Callback<RecordsResponse> {
-            override fun onResponse(
-                call: Call<RecordsResponse>,
-                response: Response<RecordsResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val recordsResponse: List<RecordItem?>? = response.body()?.data
+        try {
+            val response = apiService.detectAnomaly(AnomalyRequestBody(input_amount = input_amount))
 
+            if (response.isSuccessful) {
+                val anomalyResponse = response.body()
+                Log.d("anomalyResponse.loss", anomalyResponse?.loss.toString())
+                return Result.Success(
+                    AnomalyEntity(
+                        id = recordId,
+                        date = record.dateTime,
+                        recordId = recordId,
+                        loss = anomalyResponse?.loss.toString().toDouble(),
+                        anomalyDetected = anomalyResponse?.isAnomalyDetected ?: false
+                    )
+                )
+            } else {
+                return Result.Error("Anomaly detection failed")
+            }
+        } catch (e: Exception) {
+            return Result.Error("Error: ${e.localizedMessage}")
+        }
+    }
 
-                    val records: List<RecordEntity> =
-                        recordsResponse?.mapNotNull { recordItem ->
-                            recordItem?.let { RecordEntity(it) }
-                        } ?: emptyList()
+    private suspend fun detectAnomaly(record: RecordEntity, recordId: Int) {
+        val anomalyResult = requestAnomaly(record, recordId)
 
-                    mediatorLiveDataResult.postValue(Result.Success(records))
+        when (anomalyResult) {
+            is Result.Success -> {
+                if (anomalyResult.data.anomalyDetected) {
+                    recordDao.insertAnomaly(anomalyResult.data)
+                } else {
+                    recordDao.deleteAnomalyByRecordId(recordId)
                 }
             }
 
-            override fun onFailure(call: Call<RecordsResponse>, t: Throwable) {
-                mediatorLiveDataResult.value = Result.Error(t.message.toString())
-            }
-        })
-
-        return mediatorLiveDataResult
+            is Result.Error -> {}
+            Result.Loading -> {}
+        }
     }
+
 
     fun getRecords(
         orderBy: String? = "desc"
@@ -74,12 +89,15 @@ class RecordRepository private constructor(
     }
 
     suspend fun storeRecord(record: RecordEntity) {
-        recordDao.insertRecord(record)
+        val recordId = recordDao.insertRecord(record)
 
         val account = accountDao.getAccountByIdDirect(record.accountId)
         val updatedAccount: AccountEntity =
             account.copy(startingAmount = account.startingAmount + record.amount)
         accountDao.updateAccount(updatedAccount)
+
+        detectAnomaly(record, recordId.toInt())
+
         Log.d("Account change", updatedAccount.toString())
     }
 
@@ -89,9 +107,11 @@ class RecordRepository private constructor(
         val account = accountDao.getAccountByIdDirect(record.accountId)
         val updatedAccount: AccountEntity =
             account.copy(startingAmount = account.startingAmount + updatedAmountInterval)
-        accountDao.updateAccount(updatedAccount)
 
         recordDao.updateRecord(record)
+        accountDao.updateAccount(updatedAccount)
+        detectAnomaly(record, record.id)
+
     }
 
     suspend fun deleteRecord(recordId: Int): Boolean {
@@ -100,11 +120,39 @@ class RecordRepository private constructor(
             val account = accountDao.getAccountByIdDirect(it.accountId)
             val newAccount: AccountEntity =
                 account.copy(startingAmount = account.startingAmount - record.amount)
-            Log.d("Account change", account.startingAmount.toString() + record.amount.toString())
+            Log.d(
+                "Account change",
+                account.startingAmount.toString() + record.amount.toString()
+            )
             accountDao.updateAccount(newAccount)
         }
 
+        recordDao.deleteAnomalyByRecordId(recordId)
+
         return recordDao.deleteRecordById(recordId) > 0
+    }
+
+
+    private val anomalyMediatorLiveDataResult = MediatorLiveData<Result<List<AnomalyWithRecord>>>()
+
+    fun getAnomalies(): LiveData<Result<List<AnomalyWithRecord>>> {
+        val source = recordDao.getAllAnomaliesWithRecord()
+
+        anomalyMediatorLiveDataResult.addSource(source) {
+            anomalyMediatorLiveDataResult.value = Result.Success(it)
+        }
+
+        return anomalyMediatorLiveDataResult
+    }
+
+    suspend fun deleteAnomaly(anomaly: AnomalyEntity) {
+        recordDao.deleteAnomaly(anomaly)
+    }
+
+    suspend fun toggleAnomaly(anomaly: AnomalyEntity) {
+        val anomalyId = anomaly.id
+        val isAnomaly = !anomaly.anomalyDetected
+        recordDao.setAnomalyStatus(anomalyId, isAnomaly)
     }
 
     companion object {
@@ -117,7 +165,12 @@ class RecordRepository private constructor(
             appExecutors: AppExecutors
         ): RecordRepository =
             instance ?: synchronized(this) {
-                instance ?: RecordRepository(apiService, recordDao, accountDao, appExecutors)
+                instance ?: RecordRepository(
+                    apiService,
+                    recordDao,
+                    accountDao,
+                    appExecutors
+                )
             }.also { instance = it }
     }
 }

@@ -9,9 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sakunusa.R
 import com.example.sakunusa.data.local.entity.RecordEntity
 import com.example.sakunusa.databinding.ItemRecordBinding
+import com.example.sakunusa.utils.Utils
 import com.example.sakunusa.utils.Utils.formatDate
-import java.text.NumberFormat
-import java.util.Locale
 
 class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
     ListAdapter<RecordEntity, RecordAdapter.MyViewHolder>(RecordDiffCallback) {
@@ -32,8 +31,7 @@ class RecordAdapter(private var onclick: (RecordEntity) -> Unit) :
             binding.tvAmount.setTextColor(color)
 
 
-            val formatter = NumberFormat.getInstance(Locale.GERMANY)
-            binding.tvAmount.text = formatter.format(record.amount)
+            binding.tvAmount.text = Utils.formatAmount(record.amount)
             binding.tvDateTime.text = formatDate(record.dateTime)
             binding.tvCategory.text = record.category
             binding.tvDescription.text = record.description.toString()

@@ -2,10 +2,14 @@ package com.example.sakunusa.data.local.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import com.example.sakunusa.data.local.entity.AnomalyEntity
+import com.example.sakunusa.data.local.entity.AnomalyWithRecord
 import com.example.sakunusa.data.local.entity.RecordEntity
 import java.util.Date
 
@@ -36,21 +40,45 @@ interface RecordDao {
     @Query("SELECT * FROM records WHERE id = :recordId ")
     suspend fun getRecordById(recordId: Int): RecordEntity?
 
-    @Query("""
+    @Query(
+        """
         SELECT * FROM records 
         WHERE accountId IN (
             SELECT id FROM account WHERE isSelected = 1
         )
         ORDER BY dateTime ASC
-    """)
+    """
+    )
 
     fun getRecordsForSelectedAccountsAsc(): LiveData<List<RecordEntity>>
-    @Query("""
+
+    @Query(
+        """
         SELECT * FROM records 
         WHERE accountId IN (
             SELECT id FROM account WHERE isSelected = 1
         )
         ORDER BY dateTime DESC
-    """)
+    """
+    )
     fun getRecordsForSelectedAccountsDesc(): LiveData<List<RecordEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAnomaly(anomalyEntity: AnomalyEntity)
+
+    @Transaction
+    @Query("SELECT * FROM anomalies WHERE id = :anomalyId")
+    fun getAnomalyWithRecordById(anomalyId: Int): AnomalyWithRecord?
+
+    @Transaction
+    @Query("SELECT * FROM anomalies")
+    fun getAllAnomaliesWithRecord(): LiveData<List<AnomalyWithRecord>>
+
+    @Delete
+    suspend fun deleteAnomaly(anomaly: AnomalyEntity)
+    @Query("DELETE FROM anomalies WHERE recordId = :recordId")
+    suspend fun deleteAnomalyByRecordId(recordId: Int)
+
+    @Query("UPDATE anomalies SET anomalyDetected = :anomaly WHERE id = :anomalyId")
+    suspend fun setAnomalyStatus(anomalyId: Int, anomaly: Boolean)
 }
